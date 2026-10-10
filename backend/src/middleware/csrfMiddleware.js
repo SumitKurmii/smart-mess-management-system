@@ -27,8 +27,15 @@ const validateOriginAndCSRF = (req, res, next) => {
   const origin = req.headers.origin;
   const referer = req.headers.referer;
 
+  const configuredOrigins = config.frontendUrl
+    ? config.frontendUrl.split(',').map(url => url.trim())
+    : [];
+
   const trustedOrigins = [
-    config.frontendUrl,
+    ...configuredOrigins,
+    'https://smart-mess-frontend-sumitkurmii.vercel.app',
+    'https://smart-mess-frontend.vercel.app',
+    'https://smart-mess-frontend-ja5oal4oi-sumitkurmii.vercel.app',
     'http://localhost:5173',
     'http://127.0.0.1:5173',
     'http://localhost:5000',

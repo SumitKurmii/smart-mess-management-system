@@ -21,8 +21,15 @@ const announcementRoutes = require('./routes/announcementRoutes');
 const app = express();
 
 // 1. Explicit Trusted Origin CORS with Credentials
+const configuredOrigins = config.frontendUrl
+  ? config.frontendUrl.split(',').map(url => url.trim())
+  : [];
+
 const allowedOrigins = [
-  config.frontendUrl,
+  ...configuredOrigins,
+  'https://smart-mess-frontend-sumitkurmii.vercel.app',
+  'https://smart-mess-frontend.vercel.app',
+  'https://smart-mess-frontend-ja5oal4oi-sumitkurmii.vercel.app',
   'http://localhost:5173',
   'http://127.0.0.1:5173'
 ].map(url => url.toLowerCase().replace(/\/$/, ''));
@@ -41,7 +48,8 @@ app.use(
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-Smart-Mess-Client']
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-Smart-Mess-Client', 'Accept'],
+    optionsSuccessStatus: 204
   })
 );
 

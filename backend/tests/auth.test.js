@@ -224,5 +224,88 @@ describe('Authentication & Authorization Integration Tests', () => {
       const cookies = res.headers['set-cookie'];
       expect(cookies.some(c => c.startsWith('auth_token=;'))).toBe(true);
     });
+
+    it('should allow state-changing request and CSRF validation from production Vercel origin', async () => {
+      const res = await request(app)
+        .post('/api/auth/logout')
+        .set('Origin', 'https://smart-mess-frontend-sumitkurmii.vercel.app');
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.headers['access-control-allow-origin']).toBe('https://smart-mess-frontend-sumitkurmii.vercel.app');
+      expect(res.headers['access-control-allow-credentials']).toBe('true');
+    });
+  });
+
+  describe('CORS and Preflight Handling for Production & Development', () => {
+    const prodOrigin = 'https://smart-mess-frontend-sumitkurmii.vercel.app';
+    const disallowedOrigin = 'https://malicious-site.com';
+
+    it('should handle preflight OPTIONS for /api/auth/login from production Vercel origin', async () => {
+      const res = await request(app)
+        .options('/api/auth/login')
+        .set('Origin', prodOrigin)
+        .set('Access-Control-Request-Method', 'POST')
+        .set('Access-Control-Request-Headers', 'Content-Type,X-Smart-Mess-Client,Authorization');
+
+      expect(res.status).toBe(204);
+      expect(res.headers['access-control-allow-origin']).toBe(prodOrigin);
+      expect(res.headers['access-control-allow-credentials']).toBe('true');
+      expect(res.headers['access-control-allow-methods']).toContain('POST');
+      expect(res.headers['access-control-allow-headers']).toMatch(/Content-Type/i);
+      expect(res.headers['access-control-allow-headers']).toMatch(/X-Smart-Mess-Client/i);
+    });
+
+    it('should handle preflight OPTIONS for /api/auth/me from production Vercel origin', async () => {
+      const res = await request(app)
+        .options('/api/auth/me')
+        .set('Origin', prodOrigin)
+        .set('Access-Control-Request-Method', 'GET')
+        .set('Access-Control-Request-Headers', 'X-Smart-Mess-Client');
+
+      expect(res.status).toBe(204);
+      expect(res.headers['access-control-allow-origin']).toBe(prodOrigin);
+      expect(res.headers['access-control-allow-credentials']).toBe('true');
+      expect(res.headers['access-control-allow-methods']).toContain('GET');
+    });
+
+    it('should allow credentialed GET request from production origin with explicit origin header', async () => {
+      const res = await request(app)
+        .get('/api/health')
+        .set('Origin', prodOrigin);
+
+      expect(res.status).toBe(200);
+      expect(res.headers['access-control-allow-origin']).toBe(prodOrigin);
+      expect(res.headers['access-control-allow-credentials']).toBe('true');
+      expect(res.headers['access-control-allow-origin']).not.toBe('*');
+    });
+
+    it('should not return Access-Control-Allow-Origin for preflight OPTIONS from disallowed origin', async () => {
+      const res = await request(app)
+        .options('/api/auth/login')
+        .set('Origin', disallowedOrigin)
+        .set('Access-Control-Request-Method', 'POST');
+
+      expect(res.headers['access-control-allow-origin']).toBeUndefined();
+    });
+
+    it('should not return Access-Control-Allow-Origin for GET request from disallowed origin', async () => {
+      const res = await request(app)
+        .get('/api/health')
+        .set('Origin', disallowedOrigin);
+
+      expect(res.headers['access-control-allow-origin']).toBeUndefined();
+    });
+
+    it('should support local development origin http://localhost:5173 with credentials', async () => {
+      const res = await request(app)
+        .options('/api/auth/login')
+        .set('Origin', 'http://localhost:5173')
+        .set('Access-Control-Request-Method', 'POST');
+
+      expect(res.status).toBe(204);
+      expect(res.headers['access-control-allow-origin']).toBe('http://localhost:5173');
+      expect(res.headers['access-control-allow-credentials']).toBe('true');
+    });
   });
 });
