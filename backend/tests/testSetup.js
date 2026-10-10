@@ -8,11 +8,11 @@ const setupTestDB = () => {
     try {
       mongoServer = await MongoMemoryServer.create();
       const uri = mongoServer.getUri();
-      await mongoose.connect(uri);
+      await mongoose.connect(uri, { dbName: 'smart_mess' });
     } catch (err) {
       console.warn(`[Test DB] MongoMemoryServer initialization failed (${err.message}). Falling back to local test DB...`);
-      const fallbackUri = 'mongodb://127.0.0.1:27017/smart_mess_test';
-      await mongoose.connect(fallbackUri);
+      const fallbackUri = 'mongodb://127.0.0.1:27017/smart_mess';
+      await mongoose.connect(fallbackUri, { dbName: 'smart_mess' });
     }
   });
 
