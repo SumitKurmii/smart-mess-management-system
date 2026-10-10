@@ -80,8 +80,8 @@ const isBookingAllowed = (mealDateStr, mealType, currentInstantInput = new Date(
 
   const cutoffDT = calculateMealCutoffInstant(mealDateStr, mealType, customRules, zone);
 
-  // Allowed if current time is less than or equal to cutoff time
-  const allowed = currentDT.toMillis() <= cutoffDT.toMillis();
+  // Allowed strictly before cutoff instant; rejected at or after deadline
+  const allowed = currentDT.toMillis() < cutoffDT.toMillis();
 
   return {
     allowed,
@@ -94,10 +94,37 @@ const isBookingAllowed = (mealDateStr, mealType, currentInstantInput = new Date(
   };
 };
 
+/**
+ * Returns the start of the week (Monday) for a given date in the mess timezone
+ */
+const getWeekStart = (dateInput = new Date(), zone = config.messTimezone) => {
+  const dt = dateInput instanceof Date
+    ? DateTime.fromJSDate(dateInput).setZone(zone)
+    : DateTime.fromISO(String(dateInput), { zone });
+  return dt.startOf('week').toISODate(); // Monday
+};
+
+/**
+ * Returns an array of 7 consecutive dates (YYYY-MM-DD) starting from startDate
+ */
+const getWeekDates = (startDateInput = null, zone = config.messTimezone) => {
+  const start = startDateInput
+    ? DateTime.fromISO(String(startDateInput), { zone }).startOf('day')
+    : DateTime.now().setZone(zone).startOf('week');
+
+  const dates = [];
+  for (let i = 0; i < 7; i++) {
+    dates.push(start.plus({ days: i }).toISODate());
+  }
+  return dates;
+};
+
 module.exports = {
   DEFAULT_CUTOFFS,
   getCurrentOperationalDate,
   toOperationalDateString,
   calculateMealCutoffInstant,
-  isBookingAllowed
+  isBookingAllowed,
+  getWeekStart,
+  getWeekDates
 };

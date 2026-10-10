@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { authApi } from '../api/client';
 import { Sparkles, Calendar, CheckSquare, MessageSquare, ShieldAlert, CheckCircle, Clock } from 'lucide-react';
@@ -167,15 +168,25 @@ const StudentDashboard = () => {
       <div>
         <h2 className="text-lg font-bold text-slate-800 mb-4">Milestone Roadmap Features</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          <div className="bg-white p-5 rounded-2xl border border-slate-200 opacity-75">
-            <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center mb-3">
-              <Calendar className="w-5 h-5" />
+          <Link
+            to="/student/planner"
+            className="bg-white p-5 rounded-2xl border-2 border-emerald-500/40 shadow-sm hover:border-emerald-500 transition-all group block"
+          >
+            <div className="flex justify-between items-start mb-3">
+              <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
+                <Calendar className="w-5 h-5" />
+              </div>
+              <span className="text-[11px] font-semibold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">
+                Active
+              </span>
             </div>
-            <h3 className="font-semibold text-slate-800 text-sm">Meal Pre-Booking</h3>
+            <h3 className="font-bold text-slate-900 text-sm group-hover:text-emerald-700 transition-colors">
+              Weekly Meal Planner →
+            </h3>
             <p className="text-xs text-slate-500 mt-1">
-              Select attendance intentions for breakfast, lunch, and dinner before the operational cutoff deadline.
+              Select your attendance intentions for breakfast, lunch, and dinner to help the kitchen minimize waste.
             </p>
-          </div>
+          </Link>
 
           <div className="bg-white p-5 rounded-2xl border border-slate-200 opacity-75">
             <div className="w-9 h-9 rounded-xl bg-teal-50 text-teal-700 flex items-center justify-center mb-3">

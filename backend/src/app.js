@@ -9,6 +9,9 @@ const { errorResponse } = require('./utils/apiResponse');
 // Route imports
 const healthRoutes = require('./routes/healthRoutes');
 const authRoutes = require('./routes/authRoutes');
+const ruleRoutes = require('./routes/ruleRoutes');
+const menuRoutes = require('./routes/menuRoutes');
+const bookingRoutes = require('./routes/bookingRoutes');
 
 const app = express();
 
@@ -48,6 +51,9 @@ app.use(validateOriginAndCSRF);
 // 4. API Routes
 app.use('/api/health', healthRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/config/rules', ruleRoutes);
+app.use('/api/menu', menuRoutes);
+app.use('/api/bookings', bookingRoutes);
 
 // 5. Catch-all for undefined routes
 app.use('*', (req, res) => {

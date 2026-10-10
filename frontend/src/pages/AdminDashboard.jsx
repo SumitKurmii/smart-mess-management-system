@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { authApi } from '../api/client';
 import { Shield, CheckCircle, Scale, Utensils, Cpu, BarChart3, Clock, AlertCircle } from 'lucide-react';
@@ -164,15 +165,25 @@ const AdminDashboard = () => {
       <div>
         <h2 className="text-lg font-bold text-slate-800 mb-4">Core Administration Systems</h2>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-5">
-          <div className="bg-white p-5 rounded-2xl border border-slate-200">
-            <div className="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-700 flex items-center justify-center mb-3">
-              <Utensils className="w-5 h-5" />
+          <Link
+            to="/admin/menu"
+            className="bg-white p-5 rounded-2xl border-2 border-indigo-500/40 shadow-sm hover:border-indigo-600 transition-all group block"
+          >
+            <div className="flex justify-between items-start mb-3">
+              <div className="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-700 flex items-center justify-center">
+                <Utensils className="w-5 h-5" />
+              </div>
+              <span className="text-[11px] font-semibold bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded-full">
+                Active
+              </span>
             </div>
-            <h3 className="font-semibold text-slate-800 text-sm">Menu & Cutoffs</h3>
+            <h3 className="font-bold text-slate-900 text-sm group-hover:text-indigo-700 transition-colors">
+              Menu & Headcount →
+            </h3>
             <p className="text-xs text-slate-500 mt-1">
-              Configure daily and weekly meal plans and lock booking deadlines in Asia/Kolkata timezone.
+              Configure daily/weekly menus, monitor student diner headcount, and lock booking deadlines.
             </p>
-          </div>
+          </Link>
 
           <div className="bg-white p-5 rounded-2xl border border-slate-200">
             <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center mb-3">

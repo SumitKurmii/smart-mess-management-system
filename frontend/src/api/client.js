@@ -39,4 +39,23 @@ export const authApi = {
   testAdminAccess: () => apiClient.get('/auth/admin-only-test')
 };
 
+export const rulesApi = {
+  getRules: () => apiClient.get('/config/rules'),
+  updateRules: (rules) => apiClient.put('/config/rules', rules)
+};
+
+export const menuApi = {
+  getDailyMenu: (date) => apiClient.get('/menu/daily', { params: { date } }),
+  getWeeklyMenu: (startDate) => apiClient.get('/menu/weekly', { params: { startDate } }),
+  saveMenu: (data) => apiClient.post('/menu', data),
+  deleteMenu: (id) => apiClient.delete(`/menu/${id}`)
+};
+
+export const bookingApi = {
+  getMyBookings: (startDate, endDate) => apiClient.get('/bookings/my', { params: { startDate, endDate } }),
+  saveBooking: (data) => apiClient.post('/bookings', data),
+  saveBulkBookings: (bookings) => apiClient.post('/bookings/bulk', { bookings }),
+  getHeadcount: (date) => apiClient.get('/bookings/headcount', { params: { date } })
+};
+
 export default apiClient;

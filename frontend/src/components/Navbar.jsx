@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Utensils, LogOut, User as UserIcon, Shield, Sparkles } from 'lucide-react';
+import { Utensils, LogOut, User as UserIcon, Shield, Sparkles, Calendar } from 'lucide-react';
 
 const Navbar = () => {
   const { user, isAuthenticated, isAdmin, logout } = useAuth();
@@ -35,23 +35,41 @@ const Navbar = () => {
           <nav className="flex items-center gap-4">
             {isAuthenticated ? (
               <div className="flex items-center gap-4">
-                {/* Role-specific dashboard shortcut */}
+                {/* Role-specific shortcuts */}
                 {isAdmin ? (
-                  <Link
-                    to="/admin/dashboard"
-                    className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition-colors flex items-center gap-1.5"
-                  >
-                    <Shield className="w-3.5 h-3.5" />
-                    Admin Panel
-                  </Link>
+                  <div className="flex items-center gap-2">
+                    <Link
+                      to="/admin/dashboard"
+                      className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors flex items-center gap-1.5"
+                    >
+                      <Shield className="w-3.5 h-3.5 text-indigo-600" />
+                      Dashboard
+                    </Link>
+                    <Link
+                      to="/admin/menu"
+                      className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition-colors flex items-center gap-1.5"
+                    >
+                      <Utensils className="w-3.5 h-3.5 text-indigo-600" />
+                      Menu & Headcount
+                    </Link>
+                  </div>
                 ) : (
-                  <Link
-                    to="/student/dashboard"
-                    className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition-colors flex items-center gap-1.5"
-                  >
-                    <Sparkles className="w-3.5 h-3.5" />
-                    Student Portal
-                  </Link>
+                  <div className="flex items-center gap-2">
+                    <Link
+                      to="/student/dashboard"
+                      className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors flex items-center gap-1.5"
+                    >
+                      <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+                      Dashboard
+                    </Link>
+                    <Link
+                      to="/student/planner"
+                      className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition-colors flex items-center gap-1.5"
+                    >
+                      <Calendar className="w-3.5 h-3.5 text-emerald-600" />
+                      Weekly Planner
+                    </Link>
+                  </div>
                 )}
 
                 {/* User Info */}

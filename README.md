@@ -54,18 +54,21 @@ Smart Mess Project/
 │   ├── package.json              # Backend dependencies and scripts
 │   ├── src/
 │   │   ├── config/               # DB connection, env parser, constants
-│   │   ├── controllers/          # Request handlers (auth, health)
+│   │   ├── controllers/          # Request handlers (auth, health, menu, booking, rules)
 │   │   ├── middleware/           # Auth (cookie/bearer), RBAC, CSRF/Origin, Validation
-│   │   ├── models/               # Mongoose schemas (User)
-│   │   ├── routes/               # API routes (/api/health, /api/auth)
-│   │   ├── scripts/              # Initial administrator provisioning (seedAdmin.js)
+│   │   ├── models/               # Mongoose schemas (User, Menu, MealBooking, SystemRule)
+│   │   ├── routes/               # API routes (/api/health, /api/auth, /api/menu, /api/bookings, /api/config/rules)
+│   │   ├── scripts/              # Initial admin seeder & reset utility (seedAdmin.js, resetAdminPassword.js)
 │   │   ├── utils/                # Date/timezone engine, standard API response
 │   │   ├── app.js                # Express app configuration
 │   │   └── server.js             # Server runner & graceful shutdown
 │   └── tests/                    # Integration and unit test suites
 │       ├── health.test.js
 │       ├── auth.test.js
-│       └── dateBoundary.test.js
+│       ├── dateBoundary.test.js
+│       ├── menu.test.js
+│       ├── booking.test.js
+│       └── seedAdmin.test.js
 └── frontend/
     ├── .env.example              # Frontend environment template
     ├── package.json              # Frontend dependencies and scripts
@@ -77,7 +80,7 @@ Smart Mess Project/
         ├── api/                  # Axios client with credentials and CSRF header
         ├── components/           # Navbar, ProtectedRoute
         ├── context/              # AuthContext
-        ├── pages/                # Login, Register, StudentDashboard, AdminDashboard
+        ├── pages/                # Login, Register, Dashboards, WeeklyMealPlanner, MenuManagement
         ├── App.jsx               # Route configuration
         ├── main.jsx              # Application mount point
         └── index.css             # Tailwind base styles

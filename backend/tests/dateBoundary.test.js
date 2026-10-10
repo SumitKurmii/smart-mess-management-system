@@ -23,10 +23,11 @@ describe('Timezone & Cutoff Boundary Tests (Zone: Asia/Kolkata)', () => {
       expect(result.allowed).toBe(true);
     });
 
-    it('should ALLOW booking exactly AT the cutoff instant (22:00:00 IST)', () => {
+    it('should REJECT booking exactly AT the cutoff instant (22:00:00 IST)', () => {
       const current = DateTime.fromISO('2026-10-09T22:00:00.000', { zone: ZONE }).toJSDate();
       const result = isBookingAllowed(mealDate, 'breakfast', current, {}, ZONE);
-      expect(result.allowed).toBe(true);
+      expect(result.allowed).toBe(false);
+      expect(result.message).toContain('Booking deadline passed');
     });
 
     it('should REJECT booking exactly 1 second after cutoff (22:00:01 IST)', () => {
@@ -49,6 +50,12 @@ describe('Timezone & Cutoff Boundary Tests (Zone: Asia/Kolkata)', () => {
       const current = DateTime.fromISO('2026-10-10T08:59:59.000', { zone: ZONE }).toJSDate();
       const result = isBookingAllowed(mealDate, 'lunch', current, {}, ZONE);
       expect(result.allowed).toBe(true);
+    });
+
+    it('should REJECT booking exactly AT cutoff (09:00:00 IST)', () => {
+      const current = DateTime.fromISO('2026-10-10T09:00:00.000', { zone: ZONE }).toJSDate();
+      const result = isBookingAllowed(mealDate, 'lunch', current, {}, ZONE);
+      expect(result.allowed).toBe(false);
     });
 
     it('should REJECT booking 1 second after cutoff (09:00:01 IST)', () => {
