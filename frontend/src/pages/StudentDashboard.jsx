@@ -208,15 +208,25 @@ const StudentDashboard = () => {
             </p>
           </Link>
 
-          <div className="bg-white p-5 rounded-2xl border border-slate-200 opacity-75">
-            <div className="w-9 h-9 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center mb-3">
-              <MessageSquare className="w-5 h-5" />
+          <Link
+            to="/student/feedback"
+            className="bg-white p-5 rounded-2xl border-2 border-amber-500/40 shadow-sm hover:border-amber-500 transition-all group block"
+          >
+            <div className="flex justify-between items-start mb-3">
+              <div className="w-9 h-9 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center">
+                <MessageSquare className="w-5 h-5" />
+              </div>
+              <span className="text-[11px] font-semibold bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full">
+                Active
+              </span>
             </div>
-            <h3 className="font-semibold text-slate-800 text-sm">Feedback & Complaints</h3>
+            <h3 className="font-bold text-slate-900 text-sm group-hover:text-amber-700 transition-colors">
+              Feedback & Complaints →
+            </h3>
             <p className="text-xs text-slate-500 mt-1">
-              Rate daily dishes, share suggestions, and submit complaints tracked through to administrative resolution.
+              Rate attended meals, submit concerns, request facility repairs, and check official notices.
             </p>
-          </div>
+          </Link>
         </div>
       </div>
     </div>

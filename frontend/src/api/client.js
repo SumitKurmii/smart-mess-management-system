@@ -68,4 +68,33 @@ export const attendanceApi = {
   getStudentsList: (params) => apiClient.get('/attendance/admin/students', { params })
 };
 
+export const ratingsApi = {
+  submitRating: (data) => apiClient.post('/ratings', data),
+  getMyRatings: (params) => apiClient.get('/ratings/my', { params }),
+  getEligibleMeals: () => apiClient.get('/ratings/eligible'),
+  getAdminRatings: (params) => apiClient.get('/ratings/admin', { params })
+};
+
+export const complaintsApi = {
+  submitComplaint: (data) => apiClient.post('/complaints', data),
+  getMyComplaints: (params) => apiClient.get('/complaints/my', { params }),
+  getAdminComplaints: (params) => apiClient.get('/complaints/admin', { params }),
+  updateComplaintStatus: (id, data) => apiClient.put(`/complaints/admin/${id}`, data)
+};
+
+export const requestsApi = {
+  submitRequest: (data) => apiClient.post('/requests', data),
+  getMyRequests: (params) => apiClient.get('/requests/my', { params }),
+  getAdminRequests: (params) => apiClient.get('/requests/admin', { params }),
+  updateRequestStatus: (id, data) => apiClient.put(`/requests/admin/${id}`, data)
+};
+
+export const announcementsApi = {
+  getAnnouncements: (params) => apiClient.get('/announcements', { params }),
+  getAdminAnnouncements: (params) => apiClient.get('/announcements/admin', { params }),
+  createAnnouncement: (data) => apiClient.post('/announcements/admin', data),
+  updateAnnouncement: (id, data) => apiClient.put(`/announcements/admin/${id}`, data),
+  deleteAnnouncement: (id) => apiClient.delete(`/announcements/admin/${id}`)
+};
+
 export default apiClient;

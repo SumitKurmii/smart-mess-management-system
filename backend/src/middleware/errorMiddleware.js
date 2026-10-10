@@ -24,6 +24,15 @@ const errorHandler = (err, req, res, next) => {
     return errorResponse(res, 'Validation Error', 400, formattedErrors);
   }
 
+  // Handle Zod validation errors
+  if (err.name === 'ZodError') {
+    const formattedErrors = (err.errors || []).map(e => ({
+      field: e.path.join('.'),
+      message: e.message
+    }));
+    return errorResponse(res, 'Validation Error', 400, formattedErrors);
+  }
+
   // Handle JWT errors
   if (err.name === 'JsonWebTokenError') {
     return errorResponse(res, 'Invalid token.', 401);

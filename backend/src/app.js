@@ -13,6 +13,10 @@ const ruleRoutes = require('./routes/ruleRoutes');
 const menuRoutes = require('./routes/menuRoutes');
 const bookingRoutes = require('./routes/bookingRoutes');
 const attendanceRoutes = require('./routes/attendanceRoutes');
+const ratingRoutes = require('./routes/ratingRoutes');
+const complaintRoutes = require('./routes/complaintRoutes');
+const requestRoutes = require('./routes/requestRoutes');
+const announcementRoutes = require('./routes/announcementRoutes');
 
 const app = express();
 
@@ -56,6 +60,10 @@ app.use('/api/config/rules', ruleRoutes);
 app.use('/api/menu', menuRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/attendance', attendanceRoutes);
+app.use('/api/ratings', ratingRoutes);
+app.use('/api/complaints', complaintRoutes);
+app.use('/api/requests', requestRoutes);
+app.use('/api/announcements', announcementRoutes);
 
 // 5. Catch-all for undefined routes
 app.use('*', (req, res) => {

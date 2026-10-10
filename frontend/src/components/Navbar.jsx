@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Utensils, LogOut, User as UserIcon, Shield, Sparkles, Calendar, UserCheck } from 'lucide-react';
+import { Utensils, LogOut, User as UserIcon, Shield, Sparkles, Calendar, UserCheck, MessageSquare, Megaphone } from 'lucide-react';
 
 const Navbar = () => {
   const { user, isAuthenticated, isAdmin, logout } = useAuth();
@@ -59,6 +59,20 @@ const Navbar = () => {
                       <UserCheck className="w-3.5 h-3.5 text-purple-600" />
                       Attendance & Analytics
                     </Link>
+                    <Link
+                      to="/admin/feedback"
+                      className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-rose-50 text-rose-700 hover:bg-rose-100 transition-colors flex items-center gap-1.5"
+                    >
+                      <MessageSquare className="w-3.5 h-3.5 text-rose-600" />
+                      Complaints & Feedback
+                    </Link>
+                    <Link
+                      to="/admin/announcements"
+                      className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-amber-50 text-amber-700 hover:bg-amber-100 transition-colors flex items-center gap-1.5"
+                    >
+                      <Megaphone className="w-3.5 h-3.5 text-amber-600" />
+                      Announcements
+                    </Link>
                   </div>
                 ) : (
                   <div className="flex items-center gap-2">
@@ -82,6 +96,13 @@ const Navbar = () => {
                     >
                       <UserCheck className="w-3.5 h-3.5 text-teal-600" />
                       Meal Check-in
+                    </Link>
+                    <Link
+                      to="/student/feedback"
+                      className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-amber-50 text-amber-700 hover:bg-amber-100 transition-colors flex items-center gap-1.5"
+                    >
+                      <MessageSquare className="w-3.5 h-3.5 text-amber-600" />
+                      Feedback & Notices
                     </Link>
                   </div>
                 )}
