@@ -104,6 +104,62 @@ describe('Meal Booking & Intention Integration Tests', () => {
       });
       expect(count).toBe(1);
     });
+
+    describe('Cutoff Boundary Precision (Asia/Kolkata: Lunch Cutoff at 09:00:00 IST)', () => {
+      // Lunch cutoff for 2026-11-20 is 2026-11-20 09:00:00 IST (2026-11-20T03:30:00.000Z)
+      const targetDate = '2026-11-20';
+      const oneSecondBefore = '2026-11-20T03:29:59.000Z'; // 08:59:59 IST
+      const exactCutoff = '2026-11-20T03:30:00.000Z';     // 09:00:00 IST
+      const oneSecondAfter = '2026-11-20T03:30:01.000Z';  // 09:00:01 IST
+
+      it('should ALLOW single booking exactly 1 second before cutoff (08:59:59 IST)', async () => {
+        const res = await request(app)
+          .post('/api/bookings')
+          .set('Authorization', `Bearer ${studentToken}`)
+          .set('x-test-current-time', oneSecondBefore)
+          .send({
+            date: targetDate,
+            mealType: 'lunch',
+            status: 'booked'
+          });
+
+        expect(res.status).toBe(200);
+        expect(res.body.success).toBe(true);
+        expect(res.body.data.status).toBe('booked');
+      });
+
+      it('should REJECT single booking exactly AT the cutoff deadline (09:00:00 IST)', async () => {
+        const res = await request(app)
+          .post('/api/bookings')
+          .set('Authorization', `Bearer ${studentToken}`)
+          .set('x-test-current-time', exactCutoff)
+          .send({
+            date: targetDate,
+            mealType: 'lunch',
+            status: 'booked'
+          });
+
+        expect(res.status).toBe(400);
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toContain('Booking deadline passed');
+      });
+
+      it('should REJECT single booking exactly 1 second after cutoff deadline (09:00:01 IST)', async () => {
+        const res = await request(app)
+          .post('/api/bookings')
+          .set('Authorization', `Bearer ${studentToken}`)
+          .set('x-test-current-time', oneSecondAfter)
+          .send({
+            date: targetDate,
+            mealType: 'lunch',
+            status: 'booked'
+          });
+
+        expect(res.status).toBe(400);
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toContain('Booking deadline passed');
+      });
+    });
   });
 
   describe('Bulk Weekly Booking (POST /api/bookings/bulk)', () => {
@@ -127,6 +183,66 @@ describe('Meal Booking & Intention Integration Tests', () => {
       expect(res.status).toBe(200);
       expect(res.body.data.updatedCount).toBe(3);
       expect(res.body.data.rejectedCount).toBe(1);
+    });
+
+    describe('Cutoff Boundary Precision in Bulk Booking (Asia/Kolkata: Lunch Cutoff at 09:00:00 IST)', () => {
+      const targetDate = '2026-11-20';
+      const oneSecondBefore = '2026-11-20T03:29:59.000Z'; // 08:59:59 IST
+      const exactCutoff = '2026-11-20T03:30:00.000Z';     // 09:00:00 IST
+      const oneSecondAfter = '2026-11-20T03:30:01.000Z';  // 09:00:01 IST
+
+      it('should ALLOW bulk booking for meal exactly 1 second before cutoff', async () => {
+        const res = await request(app)
+          .post('/api/bookings/bulk')
+          .set('Authorization', `Bearer ${studentToken}`)
+          .set('x-test-current-time', oneSecondBefore)
+          .send({
+            bookings: [
+              { date: targetDate, mealType: 'lunch', status: 'booked' }
+            ]
+          });
+
+        expect(res.status).toBe(200);
+        expect(res.body.data.updatedCount).toBe(1);
+        expect(res.body.data.rejectedCount).toBe(0);
+        expect(res.body.data.results[0].status).toBe('saved');
+      });
+
+      it('should REJECT bulk booking for meal exactly AT cutoff instant', async () => {
+        const res = await request(app)
+          .post('/api/bookings/bulk')
+          .set('Authorization', `Bearer ${studentToken}`)
+          .set('x-test-current-time', exactCutoff)
+          .send({
+            bookings: [
+              { date: targetDate, mealType: 'lunch', status: 'booked' }
+            ]
+          });
+
+        expect(res.status).toBe(200);
+        expect(res.body.data.updatedCount).toBe(0);
+        expect(res.body.data.rejectedCount).toBe(1);
+        expect(res.body.data.results[0].status).toBe('rejected');
+        expect(res.body.data.results[0].reason).toContain('Booking deadline passed');
+      });
+
+      it('should REJECT bulk booking for meal exactly 1 second after cutoff', async () => {
+        const res = await request(app)
+          .post('/api/bookings/bulk')
+          .set('Authorization', `Bearer ${studentToken}`)
+          .set('x-test-current-time', oneSecondAfter)
+          .send({
+            bookings: [
+              { date: targetDate, mealType: 'lunch', status: 'booked' }
+            ]
+          });
+
+        expect(res.status).toBe(200);
+        expect(res.body.data.updatedCount).toBe(0);
+        expect(res.body.data.rejectedCount).toBe(1);
+        expect(res.body.data.results[0].status).toBe('rejected');
+        expect(res.body.data.results[0].reason).toContain('Booking deadline passed');
+      });
     });
   });
 

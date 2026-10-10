@@ -1,5 +1,6 @@
 const MealBooking = require('../models/MealBooking');
 const SystemRule = require('../models/SystemRule');
+const config = require('../config/env');
 const { successResponse, errorResponse } = require('../utils/apiResponse');
 const {
   getCurrentOperationalDate,
@@ -8,6 +9,14 @@ const {
   isBookingAllowed
 } = require('../utils/dateUtils');
 const { z } = require('zod');
+
+// Helper to determine effective current instant (permits deterministic instant injection during tests)
+const getEffectiveCurrentTime = (req) => {
+  if (config.nodeEnv === 'test' && req.headers['x-test-current-time']) {
+    return new Date(req.headers['x-test-current-time']);
+  }
+  return new Date();
+};
 
 // Helper to load cutoff rules from database or use defaults
 const getRulesMap = async () => {
@@ -69,11 +78,12 @@ const getMyBookings = async (req, res, next) => {
     });
 
     // Attach real-time cutoff status for each slot
+    const now = getEffectiveCurrentTime(req);
     const cutoffStatus = {};
     dates.forEach(d => {
       cutoffStatus[d] = {};
       ['breakfast', 'lunch', 'dinner'].forEach(meal => {
-        cutoffStatus[d][meal] = isBookingAllowed(d, meal, new Date(), rulesMap);
+        cutoffStatus[d][meal] = isBookingAllowed(d, meal, now, rulesMap);
       });
     });
 
@@ -107,8 +117,10 @@ const saveBooking = async (req, res, next) => {
       return errorResponse(res, `Booking is currently suspended for ${validated.mealType}`, 400);
     }
 
+    const now = getEffectiveCurrentTime(req);
+
     // Verify cutoff deadline in mess operational timezone
-    const check = isBookingAllowed(validated.date, validated.mealType, new Date(), rulesMap);
+    const check = isBookingAllowed(validated.date, validated.mealType, now, rulesMap);
     if (!check.allowed) {
       return errorResponse(res, check.message, 400, {
         cutoffInstant: check.cutoffInstant,
@@ -125,7 +137,7 @@ const saveBooking = async (req, res, next) => {
       },
       {
         status: validated.status,
-        bookedAt: new Date()
+        bookedAt: now
       },
       {
         upsert: true,
@@ -153,7 +165,7 @@ const saveBulkBookings = async (req, res, next) => {
   try {
     const { bookings } = bulkBookingSchema.parse(req.body);
     const rulesMap = await getRulesMap();
-    const now = new Date();
+    const now = getEffectiveCurrentTime(req);
 
     const results = [];
     let updatedCount = 0;
