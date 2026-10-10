@@ -22,6 +22,21 @@ const DEFAULT_CUTOFFS = {
   }
 };
 
+const DEFAULT_SERVICE_WINDOWS = {
+  breakfast: {
+    start: '07:30',
+    end: '09:30'
+  },
+  lunch: {
+    start: '12:30',
+    end: '14:30'
+  },
+  dinner: {
+    start: '19:30',
+    end: '21:30'
+  }
+};
+
 /**
  * Returns the current date in YYYY-MM-DD format based on operational timezone
  */
@@ -119,12 +134,155 @@ const getWeekDates = (startDateInput = null, zone = config.messTimezone) => {
   return dates;
 };
 
+/**
+ * Calculates start and end instants for a meal service window on a given date
+ */
+const getMealWindowInstants = (mealDateStr, mealType, customRule = null, zone = config.messTimezone) => {
+  const windowConfig = customRule || DEFAULT_SERVICE_WINDOWS[mealType];
+  if (!windowConfig) {
+    throw new Error(`Unsupported meal type for service window: ${mealType}`);
+  }
+
+  const windowStartStr = windowConfig.windowStart || windowConfig.start || DEFAULT_SERVICE_WINDOWS[mealType]?.start;
+  const windowEndStr = windowConfig.windowEnd || windowConfig.end || DEFAULT_SERVICE_WINDOWS[mealType]?.end;
+
+  if (!windowStartStr || !windowEndStr) {
+    throw new Error(`Incomplete service window configuration for meal type: ${mealType}`);
+  }
+
+  const [startHour, startMin] = windowStartStr.split(':').map(Number);
+  const [endHour, endMin] = windowEndStr.split(':').map(Number);
+
+  const baseDate = DateTime.fromISO(mealDateStr, { zone }).startOf('day');
+  if (!baseDate.isValid) {
+    throw new Error(`Invalid meal date format: ${mealDateStr}. Expected YYYY-MM-DD.`);
+  }
+
+  const startInstant = baseDate.set({ hour: startHour, minute: startMin, second: 0, millisecond: 0 });
+  const endInstant = baseDate.set({ hour: endHour, minute: endMin, second: 0, millisecond: 0 });
+
+  return {
+    startInstant,
+    endInstant,
+    windowStartStr,
+    windowEndStr
+  };
+};
+
+/**
+ * Validates whether the current instant is within the permitted service window for check-in
+ */
+const isWithinMealWindow = (mealDateStr, mealType, currentInstantInput = new Date(), customRule = null, zone = config.messTimezone) => {
+  const currentDT = currentInstantInput instanceof Date
+    ? DateTime.fromJSDate(currentInstantInput).setZone(zone)
+    : DateTime.fromISO(String(currentInstantInput), { zone });
+
+  const { startInstant, endInstant, windowStartStr, windowEndStr } = getMealWindowInstants(mealDateStr, mealType, customRule, zone);
+
+  const currentMs = currentDT.toMillis();
+  const startMs = startInstant.toMillis();
+  const endMs = endInstant.toMillis();
+
+  if (currentMs < startMs) {
+    return {
+      allowed: false,
+      reason: 'too_early',
+      currentInstant: currentDT.toISO(),
+      startInstant: startInstant.toISO(),
+      endInstant: endInstant.toISO(),
+      windowStartStr,
+      windowEndStr,
+      message: `Meal service for ${mealType} has not started yet. Service opens at ${windowStartStr} IST on ${mealDateStr}.`
+    };
+  }
+
+  if (currentMs > endMs) {
+    return {
+      allowed: false,
+      reason: 'too_late',
+      currentInstant: currentDT.toISO(),
+      startInstant: startInstant.toISO(),
+      endInstant: endInstant.toISO(),
+      windowStartStr,
+      windowEndStr,
+      message: `Meal service for ${mealType} has closed. Service ended at ${windowEndStr} IST on ${mealDateStr}.`
+    };
+  }
+
+  return {
+    allowed: true,
+    reason: 'within_window',
+    currentInstant: currentDT.toISO(),
+    startInstant: startInstant.toISO(),
+    endInstant: endInstant.toISO(),
+    windowStartStr,
+    windowEndStr,
+    message: `Meal service for ${mealType} is currently active.`
+  };
+};
+
+/**
+ * Determines the operational lifecycle state of a meal session on a canonical date
+ * relative to the provided operational instant (Asia/Kolkata).
+ *
+ * States:
+ * - 'upcoming': Current instant is strictly before windowStart (T < T_start)
+ * - 'in_progress': Current instant is within the active service window (T_start <= T <= T_end)
+ * - 'completed': Current instant is strictly after windowEnd (T > T_end)
+ */
+const getMealSessionLifecycle = (mealDateStr, mealType, currentInstantInput = new Date(), customRule = null, zone = config.messTimezone) => {
+  const currentDT = currentInstantInput instanceof Date
+    ? DateTime.fromJSDate(currentInstantInput).setZone(zone)
+    : DateTime.fromISO(String(currentInstantInput), { zone });
+
+  const { startInstant, endInstant, windowStartStr, windowEndStr } = getMealWindowInstants(mealDateStr, mealType, customRule, zone);
+
+  const currentMs = currentDT.toMillis();
+  const startMs = startInstant.toMillis();
+  const endMs = endInstant.toMillis();
+
+  if (currentMs < startMs) {
+    return {
+      status: 'upcoming',
+      label: 'Upcoming',
+      windowStartStr,
+      windowEndStr,
+      startInstant: startInstant.toISO(),
+      endInstant: endInstant.toISO()
+    };
+  }
+
+  if (currentMs > endMs) {
+    return {
+      status: 'completed',
+      label: 'Completed',
+      windowStartStr,
+      windowEndStr,
+      startInstant: startInstant.toISO(),
+      endInstant: endInstant.toISO()
+    };
+  }
+
+  return {
+    status: 'in_progress',
+    label: 'In progress',
+    windowStartStr,
+    windowEndStr,
+    startInstant: startInstant.toISO(),
+    endInstant: endInstant.toISO()
+  };
+};
+
 module.exports = {
   DEFAULT_CUTOFFS,
+  DEFAULT_SERVICE_WINDOWS,
   getCurrentOperationalDate,
   toOperationalDateString,
   calculateMealCutoffInstant,
   isBookingAllowed,
+  getMealWindowInstants,
+  isWithinMealWindow,
+  getMealSessionLifecycle,
   getWeekStart,
   getWeekDates
 };

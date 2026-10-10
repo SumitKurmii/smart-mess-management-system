@@ -195,15 +195,25 @@ const AdminDashboard = () => {
             </p>
           </div>
 
-          <div className="bg-white p-5 rounded-2xl border border-slate-200">
-            <div className="w-9 h-9 rounded-xl bg-purple-50 text-purple-700 flex items-center justify-center mb-3">
-              <BarChart3 className="w-5 h-5" />
+          <Link
+            to="/admin/attendance"
+            className="bg-white p-5 rounded-2xl border-2 border-purple-500/40 shadow-sm hover:border-purple-600 transition-all group block"
+          >
+            <div className="flex justify-between items-start mb-3">
+              <div className="w-9 h-9 rounded-xl bg-purple-50 text-purple-700 flex items-center justify-center">
+                <BarChart3 className="w-5 h-5" />
+              </div>
+              <span className="text-[11px] font-semibold bg-purple-100 text-purple-800 px-2 py-0.5 rounded-full">
+                Active
+              </span>
             </div>
-            <h3 className="font-semibold text-slate-800 text-sm">Deterministic Analytics</h3>
+            <h3 className="font-bold text-slate-900 text-sm group-hover:text-purple-700 transition-colors">
+              Attendance & Analytics →
+            </h3>
             <p className="text-xs text-slate-500 mt-1">
-              Evaluate expected vs actual attendance, food waste in kg, and per-dish satisfaction ratings.
+              Evaluate expected vs actual attendance, audit walk-ins and no-shows, and record manual check-ins.
             </p>
-          </div>
+          </Link>
 
           <div className="bg-white p-5 rounded-2xl border border-slate-200">
             <div className="w-9 h-9 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center mb-3">

@@ -188,15 +188,25 @@ const StudentDashboard = () => {
             </p>
           </Link>
 
-          <div className="bg-white p-5 rounded-2xl border border-slate-200 opacity-75">
-            <div className="w-9 h-9 rounded-xl bg-teal-50 text-teal-700 flex items-center justify-center mb-3">
-              <CheckSquare className="w-5 h-5" />
+          <Link
+            to="/student/attendance"
+            className="bg-white p-5 rounded-2xl border-2 border-teal-500/40 shadow-sm hover:border-teal-500 transition-all group block"
+          >
+            <div className="flex justify-between items-start mb-3">
+              <div className="w-9 h-9 rounded-xl bg-teal-50 text-teal-700 flex items-center justify-center">
+                <CheckSquare className="w-5 h-5" />
+              </div>
+              <span className="text-[11px] font-semibold bg-teal-100 text-teal-800 px-2 py-0.5 rounded-full">
+                Active
+              </span>
             </div>
-            <h3 className="font-semibold text-slate-800 text-sm">Attendance Verification</h3>
+            <h3 className="font-bold text-slate-900 text-sm group-hover:text-teal-700 transition-colors">
+              Meal Attendance & Check-in →
+            </h3>
             <p className="text-xs text-slate-500 mt-1">
-              Check in at the mess hall during the active service window to log attendance against booked meals.
+              Check in during meal service windows and review your complete dining attendance history.
             </p>
-          </div>
+          </Link>
 
           <div className="bg-white p-5 rounded-2xl border border-slate-200 opacity-75">
             <div className="w-9 h-9 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center mb-3">

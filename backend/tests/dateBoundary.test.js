@@ -3,7 +3,9 @@ const {
   calculateMealCutoffInstant,
   isBookingAllowed,
   toOperationalDateString,
-  getCurrentOperationalDate
+  getCurrentOperationalDate,
+  getMealSessionLifecycle,
+  getMealWindowInstants
 } = require('../src/utils/dateUtils');
 
 describe('Timezone & Cutoff Boundary Tests (Zone: Asia/Kolkata)', () => {
@@ -132,6 +134,60 @@ describe('Timezone & Cutoff Boundary Tests (Zone: Asia/Kolkata)', () => {
       const utcInstant = '2026-10-09T19:00:00.000Z';
       const operationalDate = toOperationalDateString(utcInstant, ZONE);
       expect(operationalDate).toBe('2026-10-10');
+    });
+  });
+
+  describe('Service Window Lifecycle Boundaries (Asia/Kolkata: Lunch 12:30 to 14:30 IST)', () => {
+    const mealDate = '2026-10-10';
+
+    it('should calculate exact service window instants in Asia/Kolkata', () => {
+      const { startInstant, endInstant, windowStartStr, windowEndStr } = getMealWindowInstants(mealDate, 'lunch', null, ZONE);
+      expect(windowStartStr).toBe('12:30');
+      expect(windowEndStr).toBe('14:30');
+      expect(startInstant.setZone(ZONE).toFormat('yyyy-MM-dd HH:mm:ss')).toBe('2026-10-10 12:30:00');
+      expect(endInstant.setZone(ZONE).toFormat('yyyy-MM-dd HH:mm:ss')).toBe('2026-10-10 14:30:00');
+    });
+
+    it('should be Upcoming 1 second before start boundary (12:29:59 IST)', () => {
+      const instant = DateTime.fromISO('2026-10-10T12:29:59.000', { zone: ZONE }).toJSDate();
+      const state = getMealSessionLifecycle(mealDate, 'lunch', instant, null, ZONE);
+      expect(state.status).toBe('upcoming');
+      expect(state.label).toBe('Upcoming');
+    });
+
+    it('should be In progress exactly AT start boundary (12:30:00.000 IST)', () => {
+      const instant = DateTime.fromISO('2026-10-10T12:30:00.000', { zone: ZONE }).toJSDate();
+      const state = getMealSessionLifecycle(mealDate, 'lunch', instant, null, ZONE);
+      expect(state.status).toBe('in_progress');
+      expect(state.label).toBe('In progress');
+    });
+
+    it('should be In progress in middle of window (13:30:00 IST)', () => {
+      const instant = DateTime.fromISO('2026-10-10T13:30:00.000', { zone: ZONE }).toJSDate();
+      const state = getMealSessionLifecycle(mealDate, 'lunch', instant, null, ZONE);
+      expect(state.status).toBe('in_progress');
+      expect(state.label).toBe('In progress');
+    });
+
+    it('should be In progress exactly AT end boundary (14:30:00.000 IST)', () => {
+      const instant = DateTime.fromISO('2026-10-10T14:30:00.000', { zone: ZONE }).toJSDate();
+      const state = getMealSessionLifecycle(mealDate, 'lunch', instant, null, ZONE);
+      expect(state.status).toBe('in_progress');
+      expect(state.label).toBe('In progress');
+    });
+
+    it('should be Completed 1 millisecond after end boundary (14:30:00.001 IST)', () => {
+      const instant = DateTime.fromISO('2026-10-10T14:30:00.001', { zone: ZONE }).toJSDate();
+      const state = getMealSessionLifecycle(mealDate, 'lunch', instant, null, ZONE);
+      expect(state.status).toBe('completed');
+      expect(state.label).toBe('Completed');
+    });
+
+    it('should be Completed 1 second after end boundary (14:30:01 IST)', () => {
+      const instant = DateTime.fromISO('2026-10-10T14:30:01.000', { zone: ZONE }).toJSDate();
+      const state = getMealSessionLifecycle(mealDate, 'lunch', instant, null, ZONE);
+      expect(state.status).toBe('completed');
+      expect(state.label).toBe('Completed');
     });
   });
 });

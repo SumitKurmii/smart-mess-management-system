@@ -12,6 +12,7 @@ const authRoutes = require('./routes/authRoutes');
 const ruleRoutes = require('./routes/ruleRoutes');
 const menuRoutes = require('./routes/menuRoutes');
 const bookingRoutes = require('./routes/bookingRoutes');
+const attendanceRoutes = require('./routes/attendanceRoutes');
 
 const app = express();
 
@@ -54,6 +55,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/config/rules', ruleRoutes);
 app.use('/api/menu', menuRoutes);
 app.use('/api/bookings', bookingRoutes);
+app.use('/api/attendance', attendanceRoutes);
 
 // 5. Catch-all for undefined routes
 app.use('*', (req, res) => {

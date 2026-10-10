@@ -12,7 +12,9 @@ import AdminDashboard from './pages/AdminDashboard';
 import UnauthorizedPage from './pages/UnauthorizedPage';
 import NotFoundPage from './pages/NotFoundPage';
 import WeeklyMealPlanner from './pages/student/WeeklyMealPlanner';
+import StudentAttendance from './pages/student/StudentAttendance';
 import MenuManagement from './pages/admin/MenuManagement';
+import AttendanceManagement from './pages/admin/AttendanceManagement';
 
 // Smart Home Redirector
 const HomeRedirect = () => {
@@ -68,6 +70,14 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/student/attendance"
+            element={
+              <ProtectedRoute allowedRoles={['student']}>
+                <StudentAttendance />
+              </ProtectedRoute>
+            }
+          />
 
           {/* Admin Protected Routes */}
           <Route
@@ -83,6 +93,14 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={['admin']}>
                 <MenuManagement />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/attendance"
+            element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <AttendanceManagement />
               </ProtectedRoute>
             }
           />

@@ -11,7 +11,8 @@ const DEFAULT_RULES = [
     cutoffMinute: 0,
     windowStart: '07:30',
     windowEnd: '09:30',
-    isBookingEnabled: true
+    isBookingEnabled: true,
+    requireBookingForCheckIn: false
   },
   {
     mealType: 'lunch',
@@ -20,7 +21,8 @@ const DEFAULT_RULES = [
     cutoffMinute: 0,
     windowStart: '12:30',
     windowEnd: '14:30',
-    isBookingEnabled: true
+    isBookingEnabled: true,
+    requireBookingForCheckIn: false
   },
   {
     mealType: 'dinner',
@@ -29,7 +31,8 @@ const DEFAULT_RULES = [
     cutoffMinute: 0,
     windowStart: '19:30',
     windowEnd: '21:30',
-    isBookingEnabled: true
+    isBookingEnabled: true,
+    requireBookingForCheckIn: false
   }
 ];
 
@@ -69,7 +72,8 @@ const updateRuleSchema = z.object({
   cutoffMinute: z.number().int().min(0).max(59),
   windowStart: z.string().regex(/^\d{2}:\d{2}$/, 'Format must be HH:MM'),
   windowEnd: z.string().regex(/^\d{2}:\d{2}$/, 'Format must be HH:MM'),
-  isBookingEnabled: z.boolean().optional().default(true)
+  isBookingEnabled: z.boolean().optional().default(true),
+  requireBookingForCheckIn: z.boolean().optional().default(false)
 });
 
 /**

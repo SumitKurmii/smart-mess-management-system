@@ -58,4 +58,14 @@ export const bookingApi = {
   getHeadcount: (date) => apiClient.get('/bookings/headcount', { params: { date } })
 };
 
+export const attendanceApi = {
+  checkIn: (data) => apiClient.post('/attendance/check-in', data),
+  getMyAttendance: (params) => apiClient.get('/attendance/my', { params }),
+  getAdminAttendance: (params) => apiClient.get('/attendance/admin/list', { params }),
+  getAnalytics: (date) => apiClient.get('/attendance/admin/analytics', { params: { date } }),
+  recordAdminAttendance: (data) => apiClient.post('/attendance/admin/record', data),
+  correctAttendance: (id, data) => apiClient.put(`/attendance/admin/${id}`, data),
+  getStudentsList: (params) => apiClient.get('/attendance/admin/students', { params })
+};
+
 export default apiClient;

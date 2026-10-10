@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Utensils, LogOut, User as UserIcon, Shield, Sparkles, Calendar } from 'lucide-react';
+import { Utensils, LogOut, User as UserIcon, Shield, Sparkles, Calendar, UserCheck } from 'lucide-react';
 
 const Navbar = () => {
   const { user, isAuthenticated, isAdmin, logout } = useAuth();
@@ -52,6 +52,13 @@ const Navbar = () => {
                       <Utensils className="w-3.5 h-3.5 text-indigo-600" />
                       Menu & Headcount
                     </Link>
+                    <Link
+                      to="/admin/attendance"
+                      className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-purple-50 text-purple-700 hover:bg-purple-100 transition-colors flex items-center gap-1.5"
+                    >
+                      <UserCheck className="w-3.5 h-3.5 text-purple-600" />
+                      Attendance & Analytics
+                    </Link>
                   </div>
                 ) : (
                   <div className="flex items-center gap-2">
@@ -68,6 +75,13 @@ const Navbar = () => {
                     >
                       <Calendar className="w-3.5 h-3.5 text-emerald-600" />
                       Weekly Planner
+                    </Link>
+                    <Link
+                      to="/student/attendance"
+                      className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-teal-50 text-teal-700 hover:bg-teal-100 transition-colors flex items-center gap-1.5"
+                    >
+                      <UserCheck className="w-3.5 h-3.5 text-teal-600" />
+                      Meal Check-in
                     </Link>
                   </div>
                 )}

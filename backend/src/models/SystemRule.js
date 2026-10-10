@@ -59,6 +59,10 @@ const systemRuleSchema = new mongoose.Schema(
       type: Boolean,
       default: true
     },
+    requireBookingForCheckIn: {
+      type: Boolean,
+      default: false
+    },
     updatedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User'
